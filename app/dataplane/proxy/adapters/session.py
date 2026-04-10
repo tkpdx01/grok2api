@@ -10,12 +10,16 @@ from app.platform.config.snapshot import get_config
 from app.control.proxy.models import ProxyLease
 
 
+_BROWSER_ALIASES = {"chrome133": "chrome133a"}
+
+
 def _resolve_browser(lease: ProxyLease | None) -> str:
     if lease is not None and lease.user_agent:
         from urllib.parse import urlparse
         import re
         m = re.search(r"Chrome/(\d+)", lease.user_agent)
-        return f"chrome{m.group(1)}" if m else "chrome120"
+        browser = f"chrome{m.group(1)}" if m else "chrome120"
+        return _BROWSER_ALIASES.get(browser, browser)
     return get_config().get_str("proxy.clearance.browser", "chrome120")
 
 
